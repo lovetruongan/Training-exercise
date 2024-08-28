@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: Demo
+  datasource:
+    url: jdbc:postgresql://localhost:5432/training?autoReconnect=true
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
