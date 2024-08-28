@@ -10,6 +10,9 @@ import {
     Modal
 } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import { useEffect } from "react";
+import CreateSuccess from './createSuccess';
 
 const styleModal = {
     position: 'absolute',
@@ -46,6 +49,23 @@ const CreateForm = () => {
             setFormSubmitted(true);
         };
     }
+    const handleSave = async () => {
+        const patientData = {
+            name,
+            gender,
+            age,
+            email,
+            phone
+        };
+
+        try {
+            const response = await axios.post('http://localhost:8080/api/v1/patients/create', patientData);
+            setFormSubmitted(false);
+            navigate('/successPage');
+        } catch (error) {
+            console.error('Error saving patient:', error);
+        }
+    };
 
     const handleNext = () => {
         validate();
@@ -137,7 +157,7 @@ const CreateForm = () => {
                         <Typography variant="body1"><strong>Phone Number:</strong> {phone}</Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={3} style={{ marginTop: 20 }}>
-                                <Button variant="contained" color="success" >
+                                <Button variant="contained" color="success" onClick={handleSave} >
                                     Save
                                 </Button>
                             </Grid>

@@ -28,7 +28,7 @@ public class PatientController {
                 .build();
     }
 
-    @PostMapping
+    @PostMapping("create")
     ApiResponse<PatientResponse> createUser(@RequestBody @Valid PatientCreateRequest request) {
         return ApiResponse.<PatientResponse>builder()
                 .result(patientService.createPatient(request))

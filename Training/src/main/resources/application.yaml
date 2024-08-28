@@ -2,7 +2,7 @@ spring:
   application:
     name: Demo
   datasource:
-    url: jdbc:postgresql://localhost:5432/training?autoReconnect=true
+    url: jdbc:postgresql://localhost:5432/demo?autoReconnect=true
     username: admin
     password: admin
     driver-class-name: org.postgresql.Driver
