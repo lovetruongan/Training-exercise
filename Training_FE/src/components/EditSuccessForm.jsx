@@ -16,7 +16,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .1)',
 }));
 
-const CreateSuccess = () => {
+const EditSuccessForm = () => {
     const navigate = useNavigate();
 
     return (
@@ -24,7 +24,7 @@ const CreateSuccess = () => {
             <StyledPaper elevation={3}>
                 <CheckCircleOutline color="success" style={{ fontSize: 60 }} />
                 <Typography variant="h5" component="h2" align="center">
-                    Đã tạo thành công bệnh nhân mới
+                    Update patient Success
                 </Typography>
                 <Button
                     variant="contained"
@@ -33,11 +33,11 @@ const CreateSuccess = () => {
                     size="large"
                     fullWidth
                 >
-                    Trở về trang chủ
+                    Back to home
                 </Button>
             </StyledPaper>
         </Container>
     )
 }
 
-export default CreateSuccess
+export default EditSuccessForm

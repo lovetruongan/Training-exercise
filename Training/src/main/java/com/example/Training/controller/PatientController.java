@@ -2,15 +2,14 @@ package com.example.Training.controller;
 
 
 import com.example.Training.dto.request.PatientCreateRequest;
+import com.example.Training.dto.request.PatientUpdateRequest;
 import com.example.Training.dto.response.ApiResponse;
 import com.example.Training.dto.response.PatientResponse;
 import com.example.Training.service.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -20,10 +19,18 @@ public class PatientController {
     @Autowired
     PatientService patientService;
 
-    @RequestMapping()
+    @GetMapping
     ApiResponse<List<PatientResponse>> getPatients() {
         return ApiResponse.<List<PatientResponse>>builder()
                 .result(patientService.getPatients())
+                .message("Success")
+                .build();
+    }
+
+    @GetMapping("{patientID}")
+    ApiResponse<PatientResponse> getPatient(@PathVariable("patientID") Integer patientID) {
+        return ApiResponse.<PatientResponse>builder()
+                .result(patientService.getPatient(patientID))
                 .message("Success")
                 .build();
     }
@@ -36,4 +43,19 @@ public class PatientController {
                 .build();
     }
 
+    @PutMapping("update/{patientID}")
+    ApiResponse<PatientResponse> updateUser(@Valid @PathVariable Integer patientID, @RequestBody PatientUpdateRequest request) {
+        return ApiResponse.<PatientResponse>builder()
+                .result(patientService.updatePatient(patientID, request))
+                .message("User updated successfully")
+                .build();
+    }
+
+    @DeleteMapping("delete/{patientID}")
+    ApiResponse<PatientResponse> deleteUser(@PathVariable Integer patientID) {
+        patientService.deletePatient(patientID);
+        return ApiResponse.<PatientResponse>builder()
+                .message("User deleted successfully")
+                .build();
+    }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     TextField,
     Button,
@@ -9,9 +9,10 @@ import {
     Box,
     Modal
 } from "@mui/material";
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
 
+const BASE_URL = "http://localhost:8080/api/v1";
 
 const styleModal = {
     position: 'absolute',
@@ -25,7 +26,8 @@ const styleModal = {
     p: 4,
 };
 
-const CreateForm = () => {
+const EditForm = () => {
+    const { patientId } = useParams();
     const [name, setName] = useState('');
     const [gender, setGender] = useState('');
     const [age, setAge] = useState('');
@@ -35,34 +37,54 @@ const CreateForm = () => {
     const [formSubmitted, setFormSubmitted] = useState(false);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const fetchPatient = async () => {
+            try {
+                const response = await axios.get(`${BASE_URL}/patients/${patientId}`);
+                const patient = response.data.result;
+                setName(patient.name);
+                setGender(patient.gender);
+                setAge(patient.age.toString());
+                setEmail(patient.email);
+                setPhone(patient.phone);
+            } catch (error) {
+                console.error('Error fetching patient:', error);
+            }
+        };
+
+        if (patientId) {
+            fetchPatient();
+        }
+    }, [patientId]);
+
     const validate = () => {
         let tempErrors = {};
         tempErrors.name = name ? "" : "Name is required";
         tempErrors.gender = gender ? "" : "Gender is required";
         tempErrors.age = age && !isNaN(age) ? "" : "Valid age is required";
-        tempErrors.email = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? "" : " email is invalid";
-        tempErrors.phone = phone && /^[0-9]{10}$/.test(phone) ? "" : " phone number is invalid";
+        tempErrors.email = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? "" : "Email is invalid";
+        tempErrors.phone = phone && /^[0-9]{10}$/.test(phone) ? "" : "Phone number is invalid";
         setErrors(tempErrors);
-        console.log(tempErrors);
         if (Object.values(tempErrors).every(x => x === "")) {
             setFormSubmitted(true);
-        };
+        }
     }
+
     const handleSave = async () => {
         const patientData = {
             name,
             gender,
-            age,
+            age: parseInt(age),
             email,
             phone
         };
 
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/patients/create', patientData);
+            const response = await axios.put(`${BASE_URL}/patients/update/${patientId}`, patientData);
             setFormSubmitted(false);
-            navigate('/successPage');
+            navigate('/editSuccess');
         } catch (error) {
-            console.error('Error saving patient:', error);
+            console.error('Error updating patient:', error);
         }
     };
 
@@ -75,19 +97,26 @@ const CreateForm = () => {
     };
 
     const handleBack = () => {
-        // Return to previous page
         setFormSubmitted(false);
-
     };
+
     const options = ['Male', 'Female'];
 
     return (
         <Paper style={{ padding: 16 }}>
-            <Typography variant="h5" style={{ textAlign: 'left', paddingBottom: 5 }} >Create New Patient</Typography>
+            <Typography variant="h5" style={{ textAlign: 'left', paddingBottom: 5 }} >Edit Patient</Typography>
             <Grid container spacing={2} style={{ textAlign: 'left' }}>
+                <Grid item xs={12} sm={6} md={4}>
+                    <TextField
+                        label="Patient ID"
+                        fullWidth
+                        value={patientId}
+                        disabled
+                    />
+                </Grid>
                 <Grid item xs={12} sm={10} md={9}>
                     <TextField
-                        label="Name"
+                        label="Name*"
                         fullWidth
                         value={name}
                         onChange={(e) => setName(e.target.value)}
@@ -106,7 +135,7 @@ const CreateForm = () => {
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                     <TextField
-                        label="Age"
+                        label="Age*"
                         value={age}
                         fullWidth
                         onChange={(e) => setAge(e.target.value)}
@@ -126,7 +155,7 @@ const CreateForm = () => {
                 </Grid>
                 <Grid item xs={12} sm={6} md={7}>
                     <TextField
-                        label="Phone Number"
+                        label="Phone Number*"
                         fullWidth
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
@@ -149,11 +178,12 @@ const CreateForm = () => {
                         <Typography id="modal-modal-title" variant="h5" component="h2" marginX={10}>
                             Patient Information
                         </Typography>
-                        <Typography variant="body1"><strong>Name:</strong> {name}</Typography>
-                        <Typography variant="body1"><strong>Gender:</strong> {gender}</Typography>
-                        <Typography variant="body1"><strong>Age:</strong> {age}</Typography>
+                        <Typography variant="body1"><strong>Patient ID*:</strong> {patientId}</Typography>
+                        <Typography variant="body1"><strong>Name*:</strong> {name}</Typography>
+                        <Typography variant="body1"><strong>Gender*:</strong> {gender}</Typography>
+                        <Typography variant="body1"><strong>Age*:</strong> {age}</Typography>
                         <Typography variant="body1"><strong>Email:</strong> {email}</Typography>
-                        <Typography variant="body1"><strong>Phone Number:</strong> {phone}</Typography>
+                        <Typography variant="body1"><strong>Phone Number*:</strong> {phone}</Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={3} style={{ marginTop: 20 }}>
                                 <Button variant="contained" color="success" onClick={handleSave} >
@@ -173,4 +203,4 @@ const CreateForm = () => {
     );
 };
 
-export default CreateForm;
+export default EditForm;

@@ -1,15 +1,16 @@
 import React from 'react'
 import { Container } from '@mui/material'
 import Layout from './Layout'
-import CreateSuccess from '../components/CreateSuccess'
+import EditSuccessForm from '../components/EditSuccessForm'
 
-const SuccessPage = () => {
+
+const EditSuccess = () => {
     return (
         <Container>
             <Layout />
-            <CreateSuccess />
+            <EditSuccessForm />
         </Container>
     )
 }
 
-export default SuccessPage
+export default EditSuccess
