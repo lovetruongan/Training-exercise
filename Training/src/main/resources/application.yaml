@@ -10,7 +10,14 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  security:
+    user:
+      name: admin
+      password: admin
 server:
   port: 8080
   servlet:
     context-path: /api/v1
+jwt:
+  signerKey: kzhyJWQwE95cH1ALeaJTZ+5g5neFudCOpO1KygO71FLauVPsxbZv7ihifspQgPP0
+

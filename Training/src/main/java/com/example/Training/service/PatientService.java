@@ -6,6 +6,7 @@ import com.example.Training.dto.response.PatientResponse;
 import com.example.Training.entity.Patient;
 import com.example.Training.exception.CustomException;
 import com.example.Training.exception.ErrorCode;
+import com.example.Training.mapper.PatientMapper;
 import com.example.Training.repository.PatientRepository;
 import jakarta.validation.constraints.Null;
 import lombok.AccessLevel;
@@ -28,31 +29,13 @@ public class PatientService {
     PatientRepository patientRepository;
 
     public List<PatientResponse> getPatients() {
-        return patientRepository.findAll().stream()
-                .map(patient -> PatientResponse.builder()
-                        .patient_id(Long.valueOf(patient.getPatient_id()))
-                        .name(patient.getName())
-                        .gender(patient.getGender())
-                        .age(patient.getAge())
-                        .email(patient.getEmail())
-                        .phone(patient.getPhone())
-                        .createdAt(patient.getCreatedAt())
-                        .updatedAt(patient.getUpdatedAt())
-                        .build())
-                .toList();
+        return PatientMapper.toPatientResponseList(patientRepository.findAll());
     }
 
     public PatientResponse getPatient(Integer patientID) {
         Patient patient = patientRepository.findById(patientID)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXISTED));
-        return PatientResponse.builder()
-                .patient_id(Long.valueOf(patient.getPatient_id()))
-                .name(patient.getName())
-                .gender(patient.getGender())
-                .age(patient.getAge())
-                .email(patient.getEmail())
-                .phone(patient.getPhone())
-                .build();
+        return PatientMapper.toPatientResponse(patient);
     }
 
     public PatientResponse createPatient(PatientCreateRequest request) {
@@ -60,23 +43,10 @@ public class PatientService {
             log.error("Patient with name {} already exists", request.getName());
             throw new CustomException(ErrorCode.USER_EXISTED);
         }
-        Patient patient = Patient.builder()
-                .name(request.getName())
-                .gender(request.getGender())
-                .age(request.getAge())
-                .email(request.getEmail())
-                .phone(request.getPhone())
-                .build();
-        return PatientResponse.builder()
-                .patient_id(Long.valueOf(patientRepository.save(patient).getPatient_id()))
-                .name(patient.getName())
-                .gender(patient.getGender())
-                .age(patient.getAge())
-                .email(patient.getEmail())
-                .phone(patient.getPhone())
-                .createdAt(patient.getCreatedAt())
-                .updatedAt(patient.getUpdatedAt())
-                .build();
+        Patient patient = PatientMapper.toPatient(request);
+        patient.setCreatedAt(LocalDate.now());
+        patient.setUpdatedAt(LocalDate.now());
+        return PatientMapper.toPatientResponse(patientRepository.save(patient));
     }
 
     public PatientResponse updatePatient(Integer patientID, PatientUpdateRequest request) {
@@ -88,16 +58,8 @@ public class PatientService {
         patient.setEmail(request.getEmail());
         patient.setPhone(request.getPhone());
         patient.setUpdatedAt(LocalDate.now());
-        return PatientResponse.builder()
-                .patient_id(Long.valueOf(patientRepository.save(patient).getPatient_id()))
-                .name(patient.getName())
-                .gender(patient.getGender())
-                .age(patient.getAge())
-                .email(patient.getEmail())
-                .phone(patient.getPhone())
-                .createdAt(patient.getCreatedAt())
-                .updatedAt(patient.getUpdatedAt())
-                .build();
+
+        return PatientMapper.toPatientResponse(patientRepository.save(patient));
     }
 
     public void deletePatient(Integer patientID) {

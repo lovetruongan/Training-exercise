@@ -130,7 +130,7 @@ const EditForm = () => {
                         options={options}
                         value={gender}
                         onChange={(event, newValue) => setGender(newValue)}
-                        renderInput={(params) => <TextField {...params} label="Gender" />}
+                        renderInput={(params) => <TextField {...params} label="Gender*" />}
                     />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
