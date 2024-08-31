@@ -14,6 +14,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../constants/constants";
+import { getToken, setToken } from "../services/LocalStorageService";
 
 const PatientList = () => {
     const [patients, setPatients] = useState([]);
@@ -43,12 +44,16 @@ const PatientList = () => {
     };
 
     const handleDelete = (id) => {
-        axios.delete(`${BASE_URL}/patients/delete/${id}`)
+        axios.delete(`${BASE_URL}/patients/delete/${id}`, {
+            headers: {
+                Authorization: `Bearer ${getToken()}`,
+            },
+        })
             .then(response => {
                 setPatients(prevPatients => prevPatients.filter(patient => patient.id !== id));
             })
             .catch(error => {
-                console.error('Lỗi khi xóa bệnh nhân:', error);
+                alert("You are not allowed to delete this patient");
             });
     };
 
@@ -105,9 +110,20 @@ const PatientList = () => {
         },
     ];
     useEffect(() => {
+        const accessToken = getToken();
+        if (!accessToken) {
+            navigate('/login');
+        }
+        console.log("accessToken: ", accessToken)
+
         const fetchPatients = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/patients`);
+                const response = await axios.get(`${BASE_URL}/patients`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`, // Set Authorization header
+                    },
+                });
+
                 const transformedPatients = response.data.result.map(patient => ({
                     ...patient,
                     id: patient.patient_id // Map patient_id to id

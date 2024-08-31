@@ -12,6 +12,7 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { BASE_URL } from "../constants/constants";
+import { getToken } from "../services/LocalStorageService";
 
 const styleModal = {
     position: 'absolute',
@@ -37,9 +38,17 @@ const EditForm = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const accessToken = getToken();
+        if (!accessToken) {
+            navigate('/login');
+        }
         const fetchPatient = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/patients/${patientId}`);
+                const response = await axios.get(`${BASE_URL}/patients/${patientId}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
                 const patient = response.data.result;
                 setName(patient.name);
                 setGender(patient.gender);
@@ -47,7 +56,8 @@ const EditForm = () => {
                 setEmail(patient.email);
                 setPhone(patient.phone);
             } catch (error) {
-                console.error('Error fetching patient:', error);
+                alert("You are not allowed to edit this patient");
+                navigate('/');
             }
         };
 

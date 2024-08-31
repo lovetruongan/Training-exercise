@@ -8,16 +8,19 @@ import com.example.Training.dto.response.PatientResponse;
 import com.example.Training.service.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5137")
 @RestController
 @RequestMapping("patients")
 public class PatientController {
     @Autowired
     PatientService patientService;
+
 
     @GetMapping
     ApiResponse<List<PatientResponse>> getPatients() {
@@ -27,6 +30,7 @@ public class PatientController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("{patientID}")
     ApiResponse<PatientResponse> getPatient(@PathVariable("patientID") Integer patientID) {
         return ApiResponse.<PatientResponse>builder()
@@ -51,6 +55,7 @@ public class PatientController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("delete/{patientID}")
     ApiResponse<PatientResponse> deleteUser(@PathVariable Integer patientID) {
         patientService.deletePatient(patientID);

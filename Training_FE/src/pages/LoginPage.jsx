@@ -1,18 +1,36 @@
-import React, { useState } from 'react';
-import { TextField, Button, Typography, Container, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { setToken, getToken } from '../services/LocalStorageService';
-import { useEffect } from 'react';
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Divider,
+    TextField,
+    Typography,
+    Snackbar,
+    Alert,
+} from "@mui/material";
 
+import GoogleIcon from "@mui/icons-material/Google";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getToken, setToken } from "../services/LocalStorageService";
 
-
-
-const LoginPage = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+export default function Login() {
     const navigate = useNavigate();
+
+    const handleCloseSnackBar = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setSnackBarOpen(false);
+    };
+
+    const handleClick = () => {
+        alert(
+            "test"
+        );
+    };
 
     useEffect(() => {
         const accessToken = getToken();
@@ -21,96 +39,150 @@ const LoginPage = () => {
             navigate("/");
         }
     }, [navigate]);
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        console.log('Sending request to:', '/api/v1/auth/login');
-        try {
-            const response = await axios.post(`http://localhost:8080/api/v1/auth/login`, {
+
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [snackBarOpen, setSnackBarOpen] = useState(false);
+    const [snackBarMessage, setSnackBarMessage] = useState("");
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+        fetch("http://localhost:8080/api/v1/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", // Set the content type to JSON
+            },
+            body: JSON.stringify({
                 username: username,
                 password: password,
-            }, {
-                headers: {
-                    "Content-Type": "application/json"
+            }),
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                // This code is a commitment between BE and FE
+                if (data.code !== 200) {
+                    throw new Error(data.message);
                 }
+                setToken(data.result.token);
+                console.log("token is: ", data.result.token)
+                navigate("/");
+            })
+            .catch((error) => {
+                setSnackBarMessage(error.message);
+                setSnackBarOpen(true);
             });
-
-            const data = response.data;
-            console.log("Response body:", data);
-
-            if (data.code !== 200) {
-                throw new Error(data.message);
-            }
-
-            setToken(data.result?.token);
-            navigate("/");
-        } catch (err) {
-            console.error('Login error:', err);
-            setError('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
-        }
     };
 
-
     return (
-        <Container component="main" maxWidth="xs">
-            <Box
-                sx={{
-                    marginTop: 8,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    backgroundColor: 'white',
-                    padding: 3,
-                    borderRadius: 2,
-                    boxShadow: 3,
-                }}
+        <>
+            <Snackbar
+                open={snackBarOpen}
+                onClose={handleCloseSnackBar}
+                autoHideDuration={6000}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
             >
-                <Typography component="h1" variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'primary.main' }}>
-                    Đăng nhập
-                </Typography>
-                <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1, width: '100%' }}>
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="username"
-                        label="Tên người dùng"
-                        name="username"
-                        autoComplete="username"
-                        autoFocus
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Mật khẩu"
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        sx={{ mb: 2 }}
-                    />
-                    {error && (
-                        <Typography color="error" sx={{ mb: 2, textAlign: 'center' }}>
-                            {error}
+                <Alert
+                    onClose={handleCloseSnackBar}
+                    severity="error"
+                    variant="filled"
+                    sx={{ width: "100%" }}
+                >
+                    {snackBarMessage}
+                </Alert>
+            </Snackbar>
+            <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                height="100vh"
+                bgcolor={"#f0f2f5"}
+            >
+                <Card
+                    sx={{
+                        minWidth: 400,
+                        maxWidth: 500,
+                        boxShadow: 4,
+                        borderRadius: 4,
+                        padding: 4,
+                    }}
+                >
+                    <CardContent>
+                        <Typography variant="h5" component="h1" gutterBottom>
+                            Welcome to Vinbrain
                         </Typography>
-                    )}
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                    >
-                        Đăng nhập
-                    </Button>
-                </Box>
-            </Box>
-        </Container>
-    );
-};
+                        <Box
+                            component="form"
+                            display="flex"
+                            flexDirection="column"
+                            alignItems="center"
+                            justifyContent="center"
+                            width="100%"
+                            onSubmit={handleSubmit}
+                        >
+                            <TextField
+                                label="Username"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                            />
+                            <TextField
+                                label="Password"
+                                type="password"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                size="large"
+                                onClick={handleSubmit}
+                                fullWidth
+                                sx={{
+                                    mt: "15px",
+                                    mb: "25px",
+                                }}
+                            >
+                                Login
+                            </Button>
+                            <Divider></Divider>
+                        </Box>
 
-export default LoginPage;
+                        <Box display="flex" flexDirection="column" width="100%" gap="25px">
+                            <Button
+                                type="button"
+                                variant="contained"
+                                color="secondary"
+                                size="large"
+                                onClick={handleClick}
+                                fullWidth
+                                sx={{ gap: "10px" }}
+                            >
+                                <GoogleIcon />
+                                Continue with Google
+                            </Button>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="success"
+                                size="large"
+                                onClick={() => navigate('/register')}
+                            >
+                                Create an account
+                            </Button>
+                        </Box>
+                    </CardContent>
+                </Card>
+            </Box>
+        </>
+    );
+}
