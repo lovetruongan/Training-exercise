@@ -4,7 +4,7 @@ services:
       context: ./Training_FE
       dockerfile: Dockerfile
     ports:
-      - "3000:80"
+      - "5173:80"
     depends_on:
       - backend
     environment:

@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/home";
+import Home from "./pages/Home";
 import CreatePatient from "./pages/CreatePatient";
 import SuccessPage from "./pages/SuccessPage";
 import EditPatient from "./pages/EditPatient";
