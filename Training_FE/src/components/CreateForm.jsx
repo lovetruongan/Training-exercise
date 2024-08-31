@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-
+import { BASE_URL } from "../constants/constants";
 
 const styleModal = {
     position: 'absolute',
@@ -58,7 +58,7 @@ const CreateForm = () => {
         };
 
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/patients/create', patientData);
+            const response = await axios.post(`${BASE_URL}/patients/create`, patientData);
             setFormSubmitted(false);
             navigate('/successPage');
         } catch (error) {

@@ -11,8 +11,7 @@ import {
 } from "@mui/material";
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
-
-const BASE_URL = "http://localhost:8080/api/v1";
+import { BASE_URL } from "../constants/constants";
 
 const styleModal = {
     position: 'absolute',

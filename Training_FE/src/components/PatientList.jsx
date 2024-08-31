@@ -13,8 +13,7 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-const BASE_URL = "http://localhost:8080/api/v1";
+import { BASE_URL } from "../constants/constants";
 
 const PatientList = () => {
     const [patients, setPatients] = useState([]);

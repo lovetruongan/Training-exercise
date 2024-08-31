@@ -5,7 +5,7 @@ import CreatePatient from "./pages/CreatePatient";
 import SuccessPage from "./pages/SuccessPage";
 import EditPatient from "./pages/EditPatient";
 import EditSuccess from "./pages/EditSuccess";
-
+import LoginPage from "./pages/LoginPage";
 export default function App() {
   return (
     <BrowserRouter>
@@ -15,6 +15,7 @@ export default function App() {
         <Route path="successPage" element={<SuccessPage />} />
         <Route path="editSuccess" element={<EditSuccess />} />
         <Route path="edit/:patientId" element={<EditPatient />} />
+        <Route path="login" element={<LoginPage />} />
       </Routes>
     </BrowserRouter>
   );

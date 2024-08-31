@@ -1,37 +1,25 @@
 import * as React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { styled } from '@mui/system';
+import { useNavigate } from 'react-router-dom';
 
-const StyledAppBar = styled(AppBar)({
-    backgroundColor: '#1976d2',
-});
-
-const StyledToolbar = styled(Toolbar)({
-    display: 'flex',
-    justifyContent: 'space-between',
-});
-
-const Logo = styled(Typography)({
-    fontWeight: 'bold',
-    fontSize: '1.5rem',
-    color: 'white',
-});
 
 export default function BasicMenu() {
+    const navigate = useNavigate();
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <StyledAppBar position="static">
-                <StyledToolbar>
-                    <Logo variant="h6">
-                        Vinbrain
-                    </Logo>
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="h6" onClick={() => navigate('/')}>
+                        <img src={'/assets/test.jpg'} alt="logo" style={{ width: '100px', height: '50px' }} />
+                    </Typography>
                     <Box>
                         <Button color="inherit">Trang chủ</Button>
                         <Button color="inherit">Dịch vụ</Button>
                         <Button color="inherit">Liên hệ</Button>
                     </Box>
-                </StyledToolbar>
-            </StyledAppBar>
+                </Toolbar>
+            </AppBar>
         </Box>
     );
 }
