@@ -15,15 +15,23 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../constants/constants";
 import { getToken, setToken } from "../services/LocalStorageService";
-
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const PatientList = () => {
+    const notify = (message, type) => {
+        if (type === 'success') {
+            toast.success(message);
+        } else if (type === 'error') {
+            toast.error(message);
+        }
+    };
+
     const [patients, setPatients] = useState([]);
     const navigate = useNavigate();
     const [openDialog, setOpenDialog] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
 
     const handleEdit = (id) => {
-        console.log('Edit bệnh nhân có ID:', id);
         navigate(`/edit/${id}`);
     };
 
@@ -178,14 +186,33 @@ const PatientList = () => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDialog} color="primary">
+                    <Button onClick={() => {
+                        notify('Hủy xóa bệnh nhân', 'error');
+                        handleCloseDialog();
+                    }} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={handleConfirmDelete} color="error" autoFocus>
+                    <Button onClick={() => {
+                        notify('Đã xóa bệnh nhân thành công', 'success');
+                        handleConfirmDelete();
+                    }} color="error" autoFocus>
                         Delete
                     </Button>
                 </DialogActions>
             </Dialog>
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+                transition={Bounce}
+            />
         </Container>
     );
 };
