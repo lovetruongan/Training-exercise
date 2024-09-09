@@ -6,6 +6,7 @@ import com.example.Training.dto.request.PatientUpdateRequest;
 import com.example.Training.dto.response.ApiResponse;
 import com.example.Training.dto.response.PatientResponse;
 import com.example.Training.service.PatientService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +22,7 @@ public class PatientController {
     @Autowired
     PatientService patientService;
 
-
+    @Operation(summary = "Get all patients")
     @GetMapping
     ApiResponse<List<PatientResponse>> getPatients() {
         return ApiResponse.<List<PatientResponse>>builder()
