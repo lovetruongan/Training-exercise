@@ -8,7 +8,7 @@ import com.example.Training.exception.CustomException;
 import com.example.Training.exception.ErrorCode;
 import com.example.Training.mapper.PatientMapper;
 import com.example.Training.repository.PatientRepository;
-import jakarta.validation.constraints.Null;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -27,15 +27,16 @@ import java.util.List;
 @Slf4j
 public class PatientService {
     PatientRepository patientRepository;
+    PatientMapper patientMapper;
 
     public List<PatientResponse> getPatients() {
-        return PatientMapper.toPatientResponseList(patientRepository.findAll());
+        return patientRepository.findAll().stream().map(patientMapper::toPatientResponse).toList();
     }
 
     public PatientResponse getPatient(Integer patientID) {
         Patient patient = patientRepository.findById(patientID)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXISTED));
-        return PatientMapper.toPatientResponse(patient);
+        return patientMapper.toPatientResponse(patient);
     }
 
     public PatientResponse createPatient(PatientCreateRequest request) {
@@ -43,10 +44,10 @@ public class PatientService {
             log.error("Patient with name {} already exists", request.getName());
             throw new CustomException(ErrorCode.USER_EXISTED);
         }
-        Patient patient = PatientMapper.toPatient(request);
+        Patient patient = patientMapper.toPatient(request);
         patient.setCreatedAt(LocalDate.now());
         patient.setUpdatedAt(LocalDate.now());
-        return PatientMapper.toPatientResponse(patientRepository.save(patient));
+        return patientMapper.toPatientResponse(patientRepository.save(patient));
     }
 
     public PatientResponse updatePatient(Integer patientID, PatientUpdateRequest request) {
@@ -59,7 +60,7 @@ public class PatientService {
         patient.setPhone(request.getPhone());
         patient.setUpdatedAt(LocalDate.now());
 
-        return PatientMapper.toPatientResponse(patientRepository.save(patient));
+        return patientMapper.toPatientResponse(patientRepository.save(patient));
     }
 
     public void deletePatient(Integer patientID) {
