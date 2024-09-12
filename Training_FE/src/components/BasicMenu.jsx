@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { logOut } from '../services/AuthenticationService';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Link } from 'react-router-dom';
 
 export default function BasicMenu() {
     const navigate = useNavigate();
@@ -22,6 +23,9 @@ export default function BasicMenu() {
                     <Box>
                         <Button color="inherit" onClick={notify}>User</Button>
                         <Button color="warning" onClick={handleLogout} style={{ marginRight: '10px' }}>Đăng xuất</Button>
+                        <Button color="inherit" component={Link} to="/send-email">
+                            Email
+                        </Button>
                     </Box>
                 </Toolbar>
                 <ToastContainer

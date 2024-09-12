@@ -7,6 +7,8 @@ import EditPatient from "./pages/EditPatient";
 import EditSuccess from "./pages/EditSuccess";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import SendEmailPage from "./pages/SendEmailPage";
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -18,6 +20,7 @@ export default function App() {
         <Route path="edit/:patientId" element={<EditPatient />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
+        <Route path="send-email" element={<SendEmailPage />} />
       </Routes>
     </BrowserRouter>
   );

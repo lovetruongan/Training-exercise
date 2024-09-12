@@ -28,7 +28,7 @@ public class UserService {
     UserRepository userRepository;
 
     public List<UserResponse> getUsers() {
-        return userRepository.findAll().stream()
+        return userRepository.findAllUser().stream()
                 .map(user -> UserResponse.builder()
                         .user_id(user.getUser_id())
                         .username(user.getUsername())
@@ -41,7 +41,7 @@ public class UserService {
     }
 
     public UserResponse getUser(String userId) {
-        User user = userRepository.findById(Integer.valueOf(userId))
+        User user = userRepository.findUserById(String.valueOf(userId))
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXISTED));
         return UserResponse.builder()
                 .user_id(user.getUser_id())
