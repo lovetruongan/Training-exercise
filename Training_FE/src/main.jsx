@@ -8,7 +8,7 @@ import EditSuccess from "./pages/EditSuccess";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import SendEmailPage from "./pages/SendEmailPage";
-
+import AuthenticationPage from "./pages/AuthenticationPage";
 export default function App() {
   return (
     <BrowserRouter>
@@ -21,6 +21,7 @@ export default function App() {
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="send-email" element={<SendEmailPage />} />
+        <Route path="authentication" element={<AuthenticationPage />} />
       </Routes>
     </BrowserRouter>
   );

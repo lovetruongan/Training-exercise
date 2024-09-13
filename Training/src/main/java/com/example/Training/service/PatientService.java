@@ -7,6 +7,7 @@ import com.example.Training.entity.Patient;
 import com.example.Training.exception.CustomException;
 import com.example.Training.exception.ErrorCode;
 import com.example.Training.mapper.PatientMapper;
+import com.example.Training.repository.PatientCriteriaRepository;
 import com.example.Training.repository.PatientRepository;
 
 import lombok.AccessLevel;
@@ -28,13 +29,18 @@ import java.util.List;
 public class PatientService {
     PatientRepository patientRepository;
     PatientMapper patientMapper;
+    PatientCriteriaRepository patientCriteriaRepository;
 
+    //using Criteria to get all patients by desc (createdAt)
     public List<PatientResponse> getPatients() {
-        return patientRepository.findAll().stream().map(patientMapper::toPatientResponse).toList();
+        return patientCriteriaRepository.findAll(PatientCriteriaRepository.hasCreatedAtAsc(null)).stream()
+                .map(patientMapper::toPatientResponse).toList();
+//        return patientRepository.findAll().stream().map(patientMapper::toPatientResponse).toList();
     }
 
+    //using Criteria
     public PatientResponse getPatient(Integer patientID) {
-        Patient patient = patientRepository.findById(patientID)
+        Patient patient = patientCriteriaRepository.findAll(PatientCriteriaRepository.hasId(patientID)).stream().findFirst()
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXISTED));
         return patientMapper.toPatientResponse(patient);
     }

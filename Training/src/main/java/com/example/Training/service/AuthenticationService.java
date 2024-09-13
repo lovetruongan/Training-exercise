@@ -1,6 +1,7 @@
 package com.example.Training.service;
 
 import com.example.Training.dto.request.AuthenticationRequest;
+import com.example.Training.dto.request.ExchangeTokenRequest;
 import com.example.Training.dto.request.IntrospectRequest;
 import com.example.Training.dto.request.LogoutRequest;
 import com.example.Training.dto.response.AuthenticationResponse;
@@ -11,11 +12,14 @@ import com.example.Training.exception.CustomException;
 import com.example.Training.exception.ErrorCode;
 import com.example.Training.repository.InvalidatedTokenRepository;
 import com.example.Training.repository.UserRepository;
+import com.example.Training.repository.httpclient.OutboundIdentityClient;
+import com.example.Training.repository.httpclient.OutboundUserClient;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
@@ -42,11 +47,34 @@ import java.util.UUID;
 public class AuthenticationService {
     UserRepository userRepository;
     InvalidatedTokenRepository invalidatedTokenRepository;
+    OutboundIdentityClient outboundIdentityClient;
+    OutboundUserClient outboundUserClient;
 
 
     @NonFinal
     @Value("${jwt.signerKey}")
     private String signerKey;
+    @NonFinal
+    @Value("${outbound.identity.client-id}")
+    protected String CLIENT_ID;
+
+    @NonFinal
+    @Value("${outbound.identity.client-secret}")
+    protected String CLIENT_SECRET;
+
+    @NonFinal
+    @Value("${outbound.identity.redirect-uri}")
+    protected String REDIRECT_URI;
+
+    @NonFinal
+    @Value("${outbound.identity.default-password}")
+    protected String DEFAULT_PASSWORD;
+
+    @NonFinal
+    @Value("${outbound.identity.default-birth}")
+    protected String DEFAULT_BIRTH;
+    @NonFinal
+    protected final String GRANT_TYPE = "authorization_code";
 
     public IntrospectResponse introspect(IntrospectRequest request)
             throws JOSEException, ParseException {
@@ -143,5 +171,39 @@ public class AuthenticationService {
     }
 
 
+    public AuthenticationResponse outboundAuthenticate(String code) {
+        try {
+            var response = outboundIdentityClient.exchangeToken(ExchangeTokenRequest.builder()
+                    .code(code)
+                    .clientId(CLIENT_ID)
+                    .clientSecret(CLIENT_SECRET)
+                    .redirectUri(REDIRECT_URI)
+                    .grantType(GRANT_TYPE)
+                    .build());
+
+            log.info("TOKEN RESPONSE {}", response);
+
+            var userInfo = outboundUserClient.getUserInfo("json", response.getAccessToken());
+
+            log.info("User Info {}", userInfo);
+
+            var user = userRepository.findByUsername(userInfo.getEmail()).orElseGet(
+                    () -> userRepository.save(User.builder()
+                            .username(userInfo.getEmail())
+                            .role("USER")
+                            .password(DEFAULT_PASSWORD)
+                            .birth(LocalDate.parse(DEFAULT_BIRTH))
+                            .build()));
+
+            var token = generateToken(user);
+
+            return AuthenticationResponse.builder()
+                    .token(token)
+                    .build();
+        } catch (FeignException e) {
+            log.error("Error during token exchange: {}", e.getMessage());
+            throw new CustomException(ErrorCode.UNAUTHENTICATED);
+        }
+    }
 }
 

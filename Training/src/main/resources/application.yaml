@@ -29,6 +29,13 @@ spring:
           ssl:
             trust: smtp.gmail.com
 
+outbound:
+  identity:
+    client-id: "385323340273-id3ii02dd0h0oub9h6mmu1ajj2dvroil.apps.googleusercontent.com"
+    client-secret: "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"
+    redirect-uri: "http://localhost:5173/authentication"
+    default-password: "123456"
+    default-birth: "2003-01-05"
 
 server:
   port: 8080
@@ -39,5 +46,3 @@ jwt:
 springdoc:
   api-docs:
     path: /api-docs
-
-#zfoq ktrv qnww elda

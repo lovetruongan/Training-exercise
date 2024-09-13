@@ -14,7 +14,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken, setToken } from "../services/LocalStorageService";
-
+import { OAuthConfig, BASE_URL } from "../constants/constants";
 export default function Login() {
     const navigate = useNavigate();
 
@@ -26,11 +26,28 @@ export default function Login() {
         setSnackBarOpen(false);
     };
 
-    const handleClick = () => {
-        alert(
-            "test"
-        );
+    const handleGoogleLogin = () => {
+        const callbackUrl = OAuthConfig.redirectUri;
+        const authUrl = OAuthConfig.authUri;
+        const googleClientId = OAuthConfig.clientId;
+
+        const targetUrl = `${authUrl}?redirect_uri=${encodeURIComponent(
+            callbackUrl
+        )}&response_type=code&client_id=${googleClientId}&scope=openid%20email%20profile`;
+
+        console.log(targetUrl);
+
+        window.location.href = targetUrl;
     };
+
+    useEffect(() => {
+        const accessToken = getToken();
+
+        if (accessToken) {
+            navigate("/");
+        }
+    }, [navigate]);
+
 
     useEffect(() => {
         const accessToken = getToken();
@@ -48,7 +65,7 @@ export default function Login() {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        fetch("http://localhost:8080/api/v1/auth/login", {
+        fetch(`${BASE_URL}/auth/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json", // Set the content type to JSON
@@ -161,9 +178,9 @@ export default function Login() {
                             <Button
                                 type="button"
                                 variant="contained"
-                                color="secondary"
+                                color="inherit"
                                 size="large"
-                                onClick={handleClick}
+                                onClick={handleGoogleLogin}
                                 fullWidth
                                 sx={{ gap: "10px" }}
                             >
