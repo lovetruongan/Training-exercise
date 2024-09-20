@@ -1,13 +1,14 @@
 package com.example.Training.service;
 
-import com.example.Training.dto.request.UserCreateRequest;
-import com.example.Training.dto.response.UserResponse;
+
 import com.example.Training.entity.QUser;
 import com.example.Training.entity.User;
 import com.example.Training.exception.CustomException;
 import com.example.Training.exception.ErrorCode;
 import com.example.Training.mapper.UserMapper;
 import com.example.Training.repository.UserRepository;
+import com.example.openapi.model.UserCreateRequest;
+import com.example.openapi.model.UserResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -37,32 +38,6 @@ public class UserService {
     @PersistenceContext
     EntityManager entityManager;
 
-//    public List<UserResponse> getUsers() {
-//        return userRepository.findAllUser().stream()
-//                .map(user -> UserResponse.builder()
-//                        .user_id(user.getUser_id())
-//                        .username(user.getUsername())
-//                        .password(user.getPassword())
-//                        .role(user.getRole())
-//                        .birth(user.getBirth())
-//                        .createdAt(user.getCreatedAt())
-//                        .build())
-//                .toList();
-//    }
-
-
-    //    public UserResponse getUser(String userId) {
-//        User user = userRepository.findUserById(String.valueOf(userId))
-//                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXISTED));
-//        return UserResponse.builder()
-//                .user_id(user.getUser_id())
-//                .username(user.getUsername())
-//                .password(user.getPassword())
-//                .role(user.getRole())
-//                .birth(user.getBirth())
-//                .createdAt(user.getCreatedAt())
-//                .build();
-//    }
     public List<UserResponse> getUsers(String sortBy) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
         QUser user = QUser.user;

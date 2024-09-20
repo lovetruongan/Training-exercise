@@ -1,8 +1,10 @@
 package com.example.Training.controller;
 
-import com.example.Training.dto.request.UserCreateRequest;
-import com.example.Training.dto.response.UserResponse;
+
 import com.example.Training.service.UserService;
+import com.example.openapi.api.UsersApiDelegate;
+import com.example.openapi.model.UserCreateRequest;
+import com.example.openapi.model.UserResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,28 +20,28 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/users")
-public class UserController {
+public class UserController implements UsersApiDelegate {
     @Autowired
     private UserService userService;
 
     @GetMapping()
-    ResponseEntity<List<UserResponse>> getUsers(@Param("sortBy") String sortBy) {
+    public ResponseEntity<List<UserResponse>> getUsers(@Param("sortBy") String sortBy) {
         return ResponseEntity.ok(userService.getUsers(sortBy));
     }
 
     @GetMapping("/{userId}")
-    ResponseEntity<UserResponse> getUser(@PathVariable("userId") String userId) {
+    public ResponseEntity<UserResponse> getUser(@PathVariable("userId") String userId) {
         return ResponseEntity.ok(userService.getUser(userId));
     }
 
     @PostMapping
-    ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request) {
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request) {
         return ResponseEntity.ok(userService.createUser(request));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("delete/{userId}")
-    ResponseEntity<Void> deleteUser(@PathVariable String userId) {
+    public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
         userService.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

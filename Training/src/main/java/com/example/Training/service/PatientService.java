@@ -1,8 +1,6 @@
 package com.example.Training.service;
 
-import com.example.Training.dto.request.PatientCreateRequest;
-import com.example.Training.dto.request.PatientUpdateRequest;
-import com.example.Training.dto.response.PatientResponse;
+
 import com.example.Training.entity.Patient;
 import com.example.Training.exception.CustomException;
 import com.example.Training.exception.ErrorCode;
@@ -10,6 +8,9 @@ import com.example.Training.mapper.PatientMapper;
 import com.example.Training.repository.PatientCriteriaRepository;
 import com.example.Training.repository.PatientRepository;
 
+import com.example.openapi.model.PatientCreateRequest;
+import com.example.openapi.model.PatientResponse;
+import com.example.openapi.model.PatientUpdateRequest;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;

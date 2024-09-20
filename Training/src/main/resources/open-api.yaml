@@ -33,7 +33,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ApiResponsePatientResponse'
+                $ref: '#/components/schemas/PatientResponse'
   /users:
     get:
       tags:
@@ -51,7 +51,9 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ApiResponseListUserResponse'
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
     post:
       tags:
         - user-controller
@@ -68,7 +70,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ApiResponseUserResponse'
+                $ref: '#/components/schemas/UserResponse'
   /patients/create:
     post:
       tags:
@@ -86,7 +88,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ApiResponsePatientResponse'
+                $ref: '#/components/schemas/PatientResponse'
   /common/send-email:
     post:
       tags:
@@ -122,7 +124,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ApiResponseObject'
+                type: object
   /auth/outbound/authentication:
     post:
       tags:
@@ -140,7 +142,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ApiResponseAuthenticationResponse'
+                $ref: '#/components/schemas/AuthenticationResponse'
   /auth/logout:
     post:
       tags:
@@ -155,10 +157,6 @@ paths:
       responses:
         '200':
           description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ApiResponseVoid'
   /auth/login:
     post:
       tags:
@@ -176,12 +174,12 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ApiResponseAuthenticationResponse'
+                $ref: '#/components/schemas/AuthenticationResponse'
   /auth/introspect:
     post:
       tags:
         - authentication-controller
-      operationId: authenticate_1
+      operationId: introspect
       requestBody:
         content:
           application/json:
@@ -194,7 +192,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ApiResponseIntrospectResponse'
+                $ref: '#/components/schemas/IntrospectResponse'
   /users/{userId}:
     get:
       tags:
@@ -212,7 +210,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ApiResponseUserResponse'
+                $ref: '#/components/schemas/UserResponse'
   /patients:
     get:
       tags:
@@ -225,7 +223,9 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ApiResponseListPatientResponse'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PatientResponse'
   /patients/{patientID}:
     get:
       tags:
@@ -244,12 +244,26 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ApiResponsePatientResponse'
+                $ref: '#/components/schemas/PatientResponse'
+  /users/delete/{userId}:
+    delete:
+      tags:
+        - user-controller
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
   /patients/delete/{patientID}:
     delete:
       tags:
         - patient-controller
-      operationId: deleteUser
+      operationId: deleteUser_1
       parameters:
         - name: patientID
           in: path
@@ -263,7 +277,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ApiResponsePatientResponse'
+                $ref: '#/components/schemas/PatientResponse'
 components:
   schemas:
     PatientUpdateRequest:
@@ -280,16 +294,6 @@ components:
           type: string
         phone:
           type: string
-    ApiResponsePatientResponse:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        result:
-          $ref: '#/components/schemas/PatientResponse'
     PatientResponse:
       type: object
       properties:
@@ -314,6 +318,9 @@ components:
           type: string
           format: date
     UserCreateRequest:
+      required:
+        - password
+        - username
       type: object
       properties:
         username:
@@ -323,16 +330,6 @@ components:
         birth:
           type: string
           format: date
-    ApiResponseUserResponse:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        result:
-          $ref: '#/components/schemas/UserResponse'
     UserResponse:
       type: object
       properties:
@@ -365,26 +362,6 @@ components:
           type: string
         phone:
           type: string
-    ApiResponseObject:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        result:
-          type: object
-    ApiResponseAuthenticationResponse:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        result:
-          $ref: '#/components/schemas/AuthenticationResponse'
     AuthenticationResponse:
       type: object
       properties:
@@ -397,16 +374,6 @@ components:
       properties:
         token:
           type: string
-    ApiResponseVoid:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        result:
-          type: object
     AuthenticationRequest:
       type: object
       properties:
@@ -419,45 +386,11 @@ components:
       properties:
         token:
           type: string
-    ApiResponseIntrospectResponse:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        result:
-          $ref: '#/components/schemas/IntrospectResponse'
     IntrospectResponse:
       type: object
       properties:
         valid:
           type: boolean
-    ApiResponseListUserResponse:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        result:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserResponse'
-    ApiResponseListPatientResponse:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        result:
-          type: array
-          items:
-            $ref: '#/components/schemas/PatientResponse'
   securitySchemes:
     bearerAuth:
       type: http
