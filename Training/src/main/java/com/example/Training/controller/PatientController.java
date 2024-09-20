@@ -3,13 +3,16 @@ package com.example.Training.controller;
 
 import com.example.Training.dto.request.PatientCreateRequest;
 import com.example.Training.dto.request.PatientUpdateRequest;
-import com.example.Training.dto.response.ApiResponse;
 import com.example.Training.dto.response.PatientResponse;
 import com.example.Training.service.PatientService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -22,46 +25,38 @@ public class PatientController {
     @Autowired
     PatientService patientService;
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+        binder.registerCustomEditor(String.class, stringTrimmerEditor);
+    }
+
     @Operation(summary = "Get all patients")
     @GetMapping
-    ApiResponse<List<PatientResponse>> getPatients() {
-        return ApiResponse.<List<PatientResponse>>builder()
-                .result(patientService.getPatients())
-                .message("Success")
-                .build();
+    ResponseEntity<List<PatientResponse>> getPatients() {
+        return new ResponseEntity<>(patientService.getPatients(), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("{patientID}")
-    ApiResponse<PatientResponse> getPatient(@PathVariable("patientID") Integer patientID) {
-        return ApiResponse.<PatientResponse>builder()
-                .result(patientService.getPatient(patientID))
-                .message("Success")
-                .build();
+    ResponseEntity<PatientResponse> getPatient(@PathVariable("patientID") Integer patientID) {
+        return ResponseEntity.ok(patientService.getPatient(patientID));
     }
 
     @PostMapping("create")
-    ApiResponse<PatientResponse> createUser(@RequestBody @Valid PatientCreateRequest request) {
-        return ApiResponse.<PatientResponse>builder()
-                .result(patientService.createPatient(request))
-                .message("User created successfully")
-                .build();
+    ResponseEntity<PatientResponse> createUser(@RequestBody @Valid PatientCreateRequest request) {
+        return new ResponseEntity<>(patientService.createPatient(request), HttpStatus.CREATED);
     }
 
     @PutMapping("update/{patientID}")
-    ApiResponse<PatientResponse> updateUser(@Valid @PathVariable Integer patientID, @RequestBody PatientUpdateRequest request) {
-        return ApiResponse.<PatientResponse>builder()
-                .result(patientService.updatePatient(patientID, request))
-                .message("User updated successfully")
-                .build();
+    ResponseEntity<PatientResponse> updateUser(@Valid @PathVariable Integer patientID, @RequestBody PatientUpdateRequest request) {
+        return new ResponseEntity<>(patientService.updatePatient(patientID, request), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("delete/{patientID}")
-    ApiResponse<PatientResponse> deleteUser(@PathVariable Integer patientID) {
+    ResponseEntity<PatientResponse> deleteUser(@PathVariable Integer patientID) {
         patientService.deletePatient(patientID);
-        return ApiResponse.<PatientResponse>builder()
-                .message("User deleted successfully")
-                .build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

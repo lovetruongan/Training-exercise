@@ -31,8 +31,7 @@ const AuthenticationPage = () => {
                 })
                 .then((data) => {
                     console.log(data);
-
-                    setToken(data.result?.token);
+                    setToken(data?.token);
                     setIsLoggedin(true);
                 });
         }

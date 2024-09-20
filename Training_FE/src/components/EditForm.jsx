@@ -49,7 +49,7 @@ const EditForm = () => {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
-                const patient = response.data.result;
+                const patient = response.data;
                 setName(patient.name);
                 setGender(patient.gender);
                 setAge(patient.age.toString());

@@ -14,7 +14,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../constants/constants";
-import { getToken, setToken } from "../services/LocalStorageService";
+import { getToken, getUser, setToken } from "../services/LocalStorageService";
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const PatientList = () => {
@@ -122,7 +122,8 @@ const PatientList = () => {
         if (!accessToken) {
             navigate('/login');
         }
-        console.log("accessToken: ", accessToken)
+        const user = getUser();
+        console.log(user);
 
         const fetchPatients = async () => {
             try {
@@ -132,7 +133,7 @@ const PatientList = () => {
                     },
                 });
 
-                const transformedPatients = response.data.result.map(patient => ({
+                const transformedPatients = response.data.map(patient => ({
                     ...patient,
                     id: patient.patient_id // Map patient_id to id
                 }));

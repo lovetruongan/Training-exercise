@@ -26,6 +26,5 @@ public class OpenApiConfig {
                                 .in(SecurityScheme.In.HEADER)
                                 .name("Authorization")))
                 .security(List.of(new SecurityRequirement().addList("bearerAuth")));
-
     }
 }

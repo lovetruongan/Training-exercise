@@ -44,8 +44,6 @@ public class MailService {
         helper.setSubject(subject);
         helper.setText(content, true);
         mailSender.send(message);
-
-
-        return "Sent";
+        return "Sented";
     }
 }

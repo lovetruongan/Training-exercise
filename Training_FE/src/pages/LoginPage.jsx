@@ -13,7 +13,7 @@ import {
 import GoogleIcon from "@mui/icons-material/Google";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getToken, setToken } from "../services/LocalStorageService";
+import { getToken, setToken, setUser } from "../services/LocalStorageService";
 import { OAuthConfig, BASE_URL } from "../constants/constants";
 export default function Login() {
     const navigate = useNavigate();
@@ -79,12 +79,8 @@ export default function Login() {
                 return response.json();
             })
             .then((data) => {
-                // This code is a commitment between BE and FE
-                if (data.code !== 200) {
-                    throw new Error(data.message);
-                }
-                setToken(data.result.token);
-                console.log("token is: ", data.result.token)
+                setToken(data.token);
+                setUser(username);
                 navigate("/");
             })
             .catch((error) => {

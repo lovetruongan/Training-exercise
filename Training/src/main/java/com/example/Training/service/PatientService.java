@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -28,6 +29,7 @@ import java.util.List;
 @Slf4j
 public class PatientService {
     PatientRepository patientRepository;
+    @Autowired
     PatientMapper patientMapper;
     PatientCriteriaRepository patientCriteriaRepository;
 
@@ -65,6 +67,7 @@ public class PatientService {
         patient.setEmail(request.getEmail());
         patient.setPhone(request.getPhone());
         patient.setUpdatedAt(LocalDate.now());
+
 
         return patientMapper.toPatientResponse(patientRepository.save(patient));
     }

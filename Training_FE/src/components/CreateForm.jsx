@@ -12,6 +12,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { BASE_URL } from "../constants/constants";
+import { toast } from "react-toastify"
 
 const styleModal = {
     position: 'absolute',
@@ -62,7 +63,7 @@ const CreateForm = () => {
             setFormSubmitted(false);
             navigate('/successPage');
         } catch (error) {
-            console.error('Error saving patient:', error);
+            toast.error("User already exists");
         }
     };
 

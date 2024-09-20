@@ -1,11 +1,11 @@
 package com.example.Training.controller;
 
-import com.example.Training.dto.response.ApiResponse;
 import com.example.Training.exception.CustomException;
 import com.example.Training.exception.ErrorCode;
 import com.example.Training.service.MailService;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,14 +22,11 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 public record CommonController(MailService mailService) {
 
     @PostMapping("/send-email")
-    public ApiResponse<?> sendEmail(@RequestParam String recipients, @RequestParam String subject,
-                                    @RequestParam String content, @RequestParam(required = false) MultipartFile[] files) {
+    public ResponseEntity<?> sendEmail(@RequestParam String recipients, @RequestParam String subject,
+                                       @RequestParam String content, @RequestParam(required = false) MultipartFile[] files) {
         try {
             String result = mailService.sendEmail(recipients, subject, content, files);
-            return ApiResponse.builder()
-                    .result(result)
-                    .message("Email sent successfully")
-                    .build();
+            return ResponseEntity.status(ACCEPTED).body(result);
         } catch (UnsupportedEncodingException | MessagingException e) {
             throw new CustomException(ErrorCode.MAIL_SEND_FAILURE);
         }
