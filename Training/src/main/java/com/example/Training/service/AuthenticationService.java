@@ -1,11 +1,7 @@
 package com.example.Training.service;
 
-import com.example.Training.dto.request.AuthenticationRequest;
+
 import com.example.Training.dto.request.ExchangeTokenRequest;
-import com.example.Training.dto.request.IntrospectRequest;
-import com.example.Training.dto.request.LogoutRequest;
-import com.example.Training.dto.response.AuthenticationResponse;
-import com.example.Training.dto.response.IntrospectResponse;
 import com.example.Training.entity.InvalidatedToken;
 import com.example.Training.entity.User;
 import com.example.Training.exception.CustomException;
@@ -14,6 +10,7 @@ import com.example.Training.repository.InvalidatedTokenRepository;
 import com.example.Training.repository.UserRepository;
 import com.example.Training.repository.httpclient.OutboundIdentityClient;
 import com.example.Training.repository.httpclient.OutboundUserClient;
+import com.example.openapi.model.*;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -87,9 +84,7 @@ public class AuthenticationService {
             isValid = false;
         }
 
-        return IntrospectResponse.builder()
-                .valid(isValid)
-                .build();
+        return new IntrospectResponse().valid(isValid);
     }
 
     public AuthenticationResponse Authenticate(AuthenticationRequest request) {
@@ -104,10 +99,8 @@ public class AuthenticationService {
         }
         var token = generateToken(user);
 
-        return AuthenticationResponse.builder()
-                .token(token)
-                .isAuthenticated(true)
-                .build();
+        return new AuthenticationResponse().token(token).authenticated(true);
+
     }
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
@@ -197,9 +190,7 @@ public class AuthenticationService {
 
             var token = generateToken(user);
 
-            return AuthenticationResponse.builder()
-                    .token(token)
-                    .build();
+            return new AuthenticationResponse().token(token);
         } catch (FeignException e) {
             log.error("Error during token exchange: {}", e.getMessage());
             throw new CustomException(ErrorCode.UNAUTHENTICATED);

@@ -1,6 +1,6 @@
 package com.example.Training.configuration;
 
-import com.example.Training.dto.request.IntrospectRequest;
+import com.example.openapi.model.IntrospectRequest;
 import com.nimbusds.jose.JOSEException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,11 +30,9 @@ public class CustomJwtDecoder implements JwtDecoder {
     public Jwt decode(String token) throws JwtException {
 
         try {
-            var response = authenticationService.introspect(IntrospectRequest.builder()
-                    .token(token)
-                    .build());
+            var response = authenticationService.introspect(new IntrospectRequest().token(token));
 
-            if (!response.isValid())
+            if (!response.getValid())
                 throw new JwtException("Token invalid");
         } catch (JOSEException | ParseException e) {
             throw new JwtException(e.getMessage());

@@ -1,11 +1,8 @@
 package com.example.Training.controller;
 
-import com.example.Training.dto.request.AuthenticationRequest;
-import com.example.Training.dto.request.IntrospectRequest;
-import com.example.Training.dto.request.LogoutRequest;
-import com.example.Training.dto.response.AuthenticationResponse;
-import com.example.Training.dto.response.IntrospectResponse;
+
 import com.example.Training.service.AuthenticationService;
+import com.example.openapi.model.*;
 import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +21,6 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
 
     @PostMapping("/login")
-//    ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
-//        var result = authenticationService.Authenticate(request);
-//        return ApiResponse.<AuthenticationResponse>builder()
-//                .result(result)
-//                .message("Success")
-//                .build();
-//    }
     ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.Authenticate(request);
         return ResponseEntity.ok().body(result);

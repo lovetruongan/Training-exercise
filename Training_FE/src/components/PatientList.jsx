@@ -45,10 +45,9 @@ const PatientList = () => {
     };
 
     const handleConfirmDelete = () => {
-        if (deleteId) {
-            handleDelete(deleteId);
-            handleCloseDialog();
-        }
+        handleDelete(deleteId);
+        handleCloseDialog();
+        
     };
 
     const handleDelete = (id) => {
@@ -59,9 +58,10 @@ const PatientList = () => {
         })
             .then(response => {
                 setPatients(prevPatients => prevPatients.filter(patient => patient.id !== id));
+                notify('Xóa bệnh nhân thành công', 'success');
             })
             .catch(error => {
-                alert("You are not allowed to delete this patient");
+                notify('Bạn không được phép xóa', 'error');
             });
     };
 
@@ -194,7 +194,6 @@ const PatientList = () => {
                         Cancel
                     </Button>
                     <Button onClick={() => {
-                        notify('Đã xóa bệnh nhân thành công', 'success');
                         handleConfirmDelete();
                     }} color="error" autoFocus>
                         Delete

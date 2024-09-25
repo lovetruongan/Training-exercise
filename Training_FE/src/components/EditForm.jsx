@@ -13,6 +13,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { BASE_URL } from "../constants/constants";
 import { getToken } from "../services/LocalStorageService";
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const styleModal = {
     position: 'absolute',
@@ -37,6 +39,14 @@ const EditForm = () => {
     const [formSubmitted, setFormSubmitted] = useState(false);
     const navigate = useNavigate();
 
+    const notify = (message, type) => {
+        if (type === 'success') {
+            toast.success(message);
+        } else if (type === 'error') {
+            toast.error(message);
+        }
+    };
+
     useEffect(() => {
         const accessToken = getToken();
         if (!accessToken) {
@@ -56,7 +66,8 @@ const EditForm = () => {
                 setEmail(patient.email);
                 setPhone(patient.phone);
             } catch (error) {
-                alert("You are not allowed to edit this patient");
+                notify('Bạn không có quyền chỉnh sửa', 'error');
+                alert('You do not have permission to edit this patient');
                 navigate('/');
             }
         };
