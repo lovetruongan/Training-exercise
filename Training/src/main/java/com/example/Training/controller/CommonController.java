@@ -1,9 +1,10 @@
 package com.example.Training.controller;
 
-import com.example.Training.exception.CustomException;
-import com.example.Training.exception.ErrorCode;
-import com.example.Training.service.MailService;
-import jakarta.mail.MessagingException;
+import com.example.Training.dto.request.EmailRequest;
+
+import com.example.Training.service.KafkaProducerService;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,16 +20,21 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 @Slf4j
 @RestController
 @RequestMapping("/common")
-public record CommonController(MailService mailService) {
+@RequiredArgsConstructor
+public class CommonController {
+
+    private final KafkaProducerService kafkaProducerService;
 
     @PostMapping("/send-email")
     public ResponseEntity<?> sendEmail(@RequestParam String recipients, @RequestParam String subject,
                                        @RequestParam String content, @RequestParam(required = false) MultipartFile[] files) {
-        try {
-            String result = mailService.sendEmail(recipients, subject, content, files);
-            return ResponseEntity.status(ACCEPTED).body(result);
-        } catch (UnsupportedEncodingException | MessagingException e) {
-            throw new CustomException(ErrorCode.MAIL_SEND_FAILURE);
-        }
+        EmailRequest emailRequest = new EmailRequest();
+        emailRequest.setRecipients(recipients);
+        emailRequest.setSubject(subject);
+        emailRequest.setContent(content);
+        emailRequest.setFiles(files);
+
+        kafkaProducerService.sendMessage("send_mail", emailRequest);
+        return ResponseEntity.status(ACCEPTED).body("Email request sent to Kafka");
     }
 }
