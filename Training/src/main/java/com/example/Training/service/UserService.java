@@ -38,6 +38,7 @@ public class UserService {
     @PersistenceContext
     EntityManager entityManager;
 
+    //using QueryDSL to get all users by username or user_id
     public List<UserResponse> getUsers(String sortBy) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
         QUser user = QUser.user;

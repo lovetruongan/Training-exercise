@@ -278,6 +278,18 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/PatientResponse'
+  /test:
+    get:
+      tags:
+        - test-controller
+      operationId: test
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
 components:
   schemas:
     PatientUpdateRequest:
